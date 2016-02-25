@@ -185,7 +185,7 @@ public class Server
 	synchronized private void disconnect(StationSession session) {
 		ArrayList<Integer> removeIndicies = new ArrayList<Integer>();
 		
-		// Collect indices to remove and remove active 
+		// Collect indices to remove and remove active
 		// station from the frame table
 		for (StationSession station : this.stations) {
 			if (station.getUid().equals(session.getUid())) {

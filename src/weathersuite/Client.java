@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 import weathersuite.client.*;
 import weathersuite.models.DataModel;
+import weathersuite.models.StatisticModel;
+import weathersuite.models.WrapperModel;
 
 public class Client 
 {
@@ -44,15 +46,6 @@ public class Client
 		this.frame.addFormListener(new FormListener() {
 			@Override
 			public void onUpdate(String type, String location, int map) {
-				try {
-					PrintWriter out = new PrintWriter(Client.this.socket.getOutputStream(), true);
-					out.println(type + ":" + location + ":" + map);
-				} 
-				catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
 				System.out.println("Update: " + type + " - " + location + " - " + map);
 			}
 		});
@@ -67,46 +60,41 @@ public class Client
 			
 			(new Thread(){
 				public void run() {
-					try {
-						BufferedReader input = new BufferedReader(
-							new InputStreamReader(Client.this.socket.getInputStream())
-						);
-						
-						String line;
-						while ((line = input.readLine()) != null && line.length() != 0) {
-							Client.this.processInput(line);
-						}
-					} 
-					catch (IOException e) {
-						// Ignore the error while reading
-						// and just dispose this session
-					}
-					finally {
-						this.interrupt();
-					}
-				}
-			}).start();
-			
-			(new Thread(){
-				@SuppressWarnings("unchecked")
-				public void run() {
-					ObjectInputStream input;
+
+					ObjectInputStream input = null;
+					
 					try {
 						input = new ObjectInputStream(Client.this.socket.getInputStream());
-						
-						ArrayList<DataModel> models;
-						while ((models = (ArrayList<DataModel>)input.readObject()) != null) {
-							for (DataModel model : models) {
-								System.out.println("Model: " + model.getZipCode());
+
+						while (true) {
+							WrapperModel wrapper = (WrapperModel)input.readObject();
+							
+							switch (wrapper.type) {
+								case WrapperModel.TYPE_DATA_MODELS:
+									Client.this.processInput(wrapper.dataModels);
+									break;
+									
+								case WrapperModel.TYPE_STATISTIC_MODEL:
+									Client.this.processInput(wrapper.statisticModel);
+									break;
 							}
 						}
-					} 
+					}
+					catch (SocketException e) {
+						// e.printStackTrace();
+					}
 					catch (IOException e) {
 						e.printStackTrace();
 					} 
 					catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
+					}
+					finally {
+						this.interrupt();
+						
+						if ( ! Client.this.socket.isClosed()) {
+							Client.this.disconnect();
+						}
 					}
 				}
 			}).start();
@@ -126,17 +114,12 @@ public class Client
 		}
 	}
 	
-	synchronized private void processInput(String line) {
-		String commandType = line.substring(0, 3);
+	synchronized private void processInput(StatisticModel model) {
+		this.frame.setClientCounter(Integer.toString(model.clientCount));
+		this.frame.setStationCounter(Integer.toString(model.stationCount));
+	}
+
+	synchronized private void processInput(ArrayList<DataModel> models) {
 		
-		if (commandType.equals("<s>")) {
-			String[] values = line.substring(3).split(":");
-			
-			this.frame.setStationCounter(values[0]);
-			this.frame.setClientCounter(values[1]);
-		}
-		else {
-			System.out.println("Line: " + line);
-		}
 	}
 }
