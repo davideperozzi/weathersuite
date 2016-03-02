@@ -17,6 +17,7 @@ public class Client
 	private int port;
 	private Socket socket;
 	private ClientFrame frame;
+	private ObjectOutputStream out;
 	
 	public Client(String host, int port) {
 		this.host = host;
@@ -46,7 +47,9 @@ public class Client
 		this.frame.addFormListener(new FormListener() {
 			@Override
 			public void onUpdate(String type, String location, int map) {
-				System.out.println("Update: " + type + " - " + location + " - " + map);
+				Client.this.writeObject(
+					new WrapperModel(new DataModel(location, type, map >= 1 ? true : false))
+				);
 			}
 		});
 		
@@ -58,9 +61,14 @@ public class Client
 		try {
 			this.socket = new Socket(this.host, this.port);
 			
+			try {
+				this.out = new ObjectOutputStream(this.socket.getOutputStream());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 			(new Thread(){
 				public void run() {
-
 					ObjectInputStream input = null;
 					
 					try {
@@ -111,6 +119,15 @@ public class Client
 		catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
+		}
+	}
+	
+	synchronized private void writeObject(WrapperModel model) {
+		try {
+			this.out.writeObject(model);
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	

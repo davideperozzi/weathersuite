@@ -12,7 +12,8 @@ import weathersuite.models.WrapperModel;
 public class ClientSession extends AbstractSession
 {
 	private String zipCode;
-	private String type;
+	private int type;
+	private boolean map;
 	ObjectOutputStream out;
 	
 	public ClientSession(Socket socket) {	
@@ -25,16 +26,8 @@ public class ClientSession extends AbstractSession
 		}
 	}
 	
-	public void run() {
-		System.out.println("Client connected");
-		
-		/*DataModel data = new DataModel("74889", "T", "1");
-		ArrayList<DataModel> models = new ArrayList<DataModel>();
-		models.add(data);
-		
-		this.writeObject(new WrapperModel(models));*/
-		
-		// Thread for input 
+	public void run() {		
+		// Thread for input
 		(new Thread(){
 			public void run(){
 				try {
@@ -44,8 +37,8 @@ public class ClientSession extends AbstractSession
 						WrapperModel wrapper = (WrapperModel)input.readObject();
 						
 						switch (wrapper.type) {
-							case WrapperModel.TYPE_DATA_MODELS:
-								ClientSession.this.processInput(wrapper.dataModels);
+							case WrapperModel.TYPE_DATA_MODEL:
+								ClientSession.this.processInput(wrapper.dataModel);
 								break;
 						}
 					}
@@ -69,9 +62,14 @@ public class ClientSession extends AbstractSession
 			this.disposeInternal();
 		}
 		else {		
-			StatisticModel statistic = new StatisticModel(stationCount, clientCount);
-			this.writeObject(new WrapperModel(statistic));
+			this.writeObject(
+				new WrapperModel(new StatisticModel(stationCount, clientCount))
+			);
 		}
+	}
+	
+	public void updateData(ArrayList<DataModel> models) {
+		
 	}
 	
 	synchronized private void writeObject(WrapperModel model) {
@@ -83,7 +81,21 @@ public class ClientSession extends AbstractSession
 		}
 	}
 	
-	private void processInput(ArrayList<DataModel> model) {
-		System.out.println("Inpit ");
+	private void processInput(DataModel model) {
+		this.type = model.getType();
+		this.zipCode = model.getZipCode();
+		this.map = model.isMap();
+	}
+	
+	public String getZipCode() {
+		return this.zipCode;
+	}
+	
+	public int getType() {
+		return this.type;
+	}
+	
+	public boolean isMap() {
+		return this.map;
 	}
 }

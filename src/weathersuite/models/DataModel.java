@@ -6,24 +6,37 @@ public class DataModel implements Serializable
 {
 	private static final long serialVersionUID = 1L;
 	
-	private String zipCode;
-	private String type;
-	private String value;
+	public static final int TYPE_STATUS = 1;
+	public static final int TYPE_TEMPERATURE = 2;
+	public static final int TYPE_WIND= 3;
 	
-	public DataModel(String zipCode, String type, String value) {
-		this.zipCode = zipCode;
+	private String zipCode;
+	private int type;
+	private String value;
+	private boolean map;
+	
+	public DataModel(String zipCode, int type, String value) {
 		this.type = type;
+		this.zipCode = zipCode;
 		this.value = value;
 	}
-
-	public void setZipCode(String zipCode) {
+	
+	public DataModel(String zipCode, String type, String value) {
+		this.setType(type);
 		this.zipCode = zipCode;
+		this.value = value;
 	}
-
-	public void setType(String type) {
-		this.type = type;
+	
+	public DataModel(String zipCode, String type, boolean map) {
+		this.setType(type);
+		this.zipCode = zipCode;
+		this.map = map;
 	}
-
+	
+	protected void setType(String type) {
+		this.type = DataModel.parseType(type);
+	}
+	
 	public void setValue(String value) {
 		this.value = value;
 	}
@@ -32,11 +45,39 @@ public class DataModel implements Serializable
 		return zipCode;
 	}
 
-	public String getType() {
+	public int getType() {
 		return type;
 	}
 
 	public String getValue() {
 		return value;
+	}
+	
+	public boolean isMap() {
+		return this.map;
+	}
+	
+	public static int parseType(String type) {
+		int retType = 0;
+		
+		switch (type.toLowerCase()) {
+			case "t":
+			case "temperatur":
+			case "temperature:":
+				retType = TYPE_TEMPERATURE;
+				break;
+			
+			case "w":
+			case "wind":
+				retType = TYPE_WIND;
+				break;
+				
+			case "s":
+			case "status":
+				retType = TYPE_STATUS;
+				break;
+		}
+		
+		return retType;
 	}
 }

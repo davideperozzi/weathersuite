@@ -62,7 +62,7 @@ public class DataProvider
 		
 		// Update data with same zipcode and type
 		for (DataModel model : this.data) {
-			if (model.getZipCode().equals(zipCode) && model.getType().equals(type)) {
+			if (model.getZipCode().equals(zipCode) && model.getType() == DataModel.parseType(type)) {
 				model.setValue(value);
 				found = true;
 				break;
@@ -79,8 +79,8 @@ public class DataProvider
 		String[] parts = data.split(":");
 		
 		String zipCode = ""; 
-		String type = "";
 		String value = "";
+		String type = "";
 		
 		for (int i = 0; i < parts.length; i++) {
 			switch (i) {
