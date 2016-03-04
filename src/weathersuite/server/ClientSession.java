@@ -12,7 +12,7 @@ import weathersuite.models.WrapperModel;
 public class ClientSession extends AbstractSession
 {
 	private String zipCode;
-	private int type;
+	private int type = -1;
 	private boolean map;
 	ObjectOutputStream out;
 	
@@ -68,13 +68,23 @@ public class ClientSession extends AbstractSession
 		}
 	}
 	
-	public void updateData(ArrayList<DataModel> models) {
-		
+	synchronized public void updateData(ArrayList<DataModel> models) {
+		System.out.println("Model length: " + models.size());
+		this.writeObject(new WrapperModel(models));
+	}
+	
+	synchronized public boolean matchModel(DataModel model) {
+		return (this.zipCode != null && this.type >= 0) &&
+				(model.getZipCode().endsWith("*") && model.getZipCode().substring(0, 1).equals(this.zipCode.substring(0,  1)) && this.type == model.getType()) || 
+				this.zipCode != null && this.type  >= 0 && model.getZipCode().equals(this.zipCode) && this.type == model.getType() || 
+				this.zipCode != null && this.type  >= 0 && this.zipCode.startsWith(model.getZipCode()) && this.type == model.getType(); 
 	}
 	
 	synchronized private void writeObject(WrapperModel model) {
 		try {
 			this.out.writeObject(model);
+			this.out.flush();
+			this.out.reset();
 		} 
 		catch (IOException e) {
 			e.printStackTrace();
@@ -85,6 +95,10 @@ public class ClientSession extends AbstractSession
 		this.type = model.getType();
 		this.zipCode = model.getZipCode();
 		this.map = model.isMap();
+		
+		if (this.interaction != null) {
+			this.interaction.onUpdateClientSession();
+		}
 	}
 	
 	public String getZipCode() {

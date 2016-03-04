@@ -46,6 +46,22 @@ public class DataProvider
 		return this.data;
 	}
 	
+	public ArrayList<DataModel> getData(String zipCode, String type) {
+		return this.getData(zipCode, DataModel.parseType(type));
+	}
+	
+	public ArrayList<DataModel> getData(String zipCode, int type) {
+		ArrayList<DataModel> models = new ArrayList<DataModel>();
+		
+		for (DataModel model : this.data) {
+			if ((model.getZipCode().matches(zipCode) || model.getZipCode().startsWith(zipCode)) && model.getType() == type) {
+				models.add(model);
+			}
+		}
+		
+		return models;
+	}
+ 	
 	synchronized public void save() throws IOException {
 		try {
 			ObjectOutputStream output = new ObjectOutputStream(new FileOutputStream(this.file));
@@ -57,26 +73,49 @@ public class DataProvider
 		}
 	}
 	
-	synchronized public void setDataByZipCode(String zipCode, String type, String value) {
+	synchronized public DataModel setDataByZipCode(String zipCode, String type, String value) {
 		boolean found = false;
+		DataModel retModel = null;
+		boolean wildcard = zipCode.endsWith("*");
+		
+		System.out.println("Set " + zipCode);
 		
 		// Update data with same zipcode and type
 		for (DataModel model : this.data) {
-			if (model.getZipCode().equals(zipCode) && model.getType() == DataModel.parseType(type)) {
+			boolean typeMatch = model.getType() == DataModel.parseType(type);
+			
+			if (wildcard) {
+				if (model.getZipCode().startsWith(zipCode.substring(0, 1)) && !model.getZipCode().endsWith("*") && typeMatch) {
+					model.setValue(value);
+				}
+			}
+			
+			if (model.getZipCode().equals(zipCode) && typeMatch) {
 				model.setValue(value);
+				retModel = model;
 				found = true;
-				break;
+				
+				// Exit loop if no wildcard is active
+				// to ensure that all data related to 
+				// the wildcard will be updated
+				if (!wildcard) {
+					break;
+				}
 			}
 		}
 		
 		// Add new data model
 		if ( ! found) {
-			this.data.add(new DataModel(zipCode, type, value));
+			retModel = new DataModel(zipCode, type, value);
+			this.data.add(retModel);
 		}
+		
+		return retModel;
 	}
 	
-	synchronized public void parseData(String data) {
+	synchronized public DataModel parseData(String data) {
 		String[] parts = data.split(":");
+		DataModel model = null;
 		
 		String zipCode = ""; 
 		String value = "";
@@ -99,10 +138,12 @@ public class DataProvider
 		}
 		
 		if ( ! zipCode.isEmpty() && ! type.isEmpty() && ! value.isEmpty()) {
-			this.setDataByZipCode(zipCode, type, value);
+			model = this.setDataByZipCode(zipCode, type, value);
 		}
 		else {
 			System.err.println("Data not complete!");
 		}
+		
+		return model;
 	}
 }

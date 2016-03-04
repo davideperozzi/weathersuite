@@ -137,6 +137,10 @@ public class Client
 	}
 
 	synchronized private void processInput(ArrayList<DataModel> models) {
+		for (DataModel model : models) {
+			System.out.println(model.getZipCode() + ": " + model.getValue());
+		}
 		
+		System.out.println("----------------------------------------");
 	}
 }

@@ -6,6 +6,7 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import weathersuite.models.DataModel;
 import weathersuite.server.ClientSession;
 import weathersuite.server.DataProvider;
 import weathersuite.server.ServerFrame;
@@ -158,7 +159,7 @@ public class Server
 			
 			@Override
 			public void onDataSend(String data) {
-				Server.this.dataProvider.parseData(data);
+				DataModel model = Server.this.dataProvider.parseData(data);
 				
 				try {
 					Server.this.dataProvider.save();
@@ -167,7 +168,20 @@ public class Server
 					System.err.println("Error while saving data: ");
 					e.printStackTrace();
 				}
+				
+				// Update client sessions data
+				if (model != null) {
+					for (ClientSession session : Server.this.clients) {
+						System.out.println("Match " + session.getZipCode() + " -> " + model.getZipCode() + " = " + session.matchModel(model));
+						if (session.matchModel(model)) {
+							Server.this.updateClientData(session);
+						}
+					}
+				}
 			}
+
+			@Override
+			public void onUpdateClientSession() {}
 		};
 		
 		session.setInteraction(interaction);
@@ -214,8 +228,11 @@ public class Server
 			}
 			
 			@Override
-			public void onDataSend(String data) {
-				System.out.println(data);
+			public void onDataSend(String data) {}
+
+			@Override
+			public void onUpdateClientSession() {
+				Server.this.updateClientData(session);
 			}
 		};
 		
@@ -259,5 +276,14 @@ public class Server
 		for (ClientSession session : this.clients) {
 			session.updateStatistics(this.stations.size(), this.clients.size());
 		}
+	}
+	
+	synchronized private void updateClientData(ClientSession session) {
+		ArrayList<DataModel> models = this.dataProvider.getData(
+			session.getZipCode(),
+			session.getType()
+		);
+		
+		session.updateData(models);
 	}
 }

@@ -36,6 +36,13 @@ public class ClientFrame extends Frame
 		
 		// Weathermap checkbox
 		this.weathermapCheckbox = new Checkbox("Wetterkarte");
+		this.weathermapCheckbox.addItemListener(new ItemListener() {
+			
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				ClientFrame.this.locationField.setEnabled(e.getStateChange() != 1);
+			}
+		});
 		
 		// Output text field
 		this.outputField = new JTextField(100);
@@ -67,8 +74,8 @@ public class ClientFrame extends Frame
 	}
 	
 	private void updatePerformed() {
-		if (this.locationField.getText().equals("")) {
-			this.showError("Bitte PLZ oder Ort eingeben");
+		if (this.locationField.getText().length() != 2 && !this.weathermapCheckbox.getState()) {
+			this.showError("Bitte gültige Region eingeben");
 		}
 		else {
 			if (this.formListener != null) {
