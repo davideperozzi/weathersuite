@@ -172,8 +172,7 @@ public class Server
 				// Update client sessions data
 				if (model != null) {
 					for (ClientSession session : Server.this.clients) {
-						System.out.println("Match " + session.getZipCode() + " -> " + model.getZipCode() + " = " + session.matchModel(model));
-						if (session.matchModel(model)) {
+						if (session.matchModel(model) || session.isMap()) {
 							Server.this.updateClientData(session);
 						}
 					}
@@ -274,15 +273,22 @@ public class Server
 	
 	synchronized private void updateClientStatistics() {
 		for (ClientSession session : this.clients) {
-			session.updateStatistics(this.stations.size(), this.clients.size());
+			session.updateStatistics(this.clients.size(), this.stations.size());
 		}
 	}
 	
 	synchronized private void updateClientData(ClientSession session) {
-		ArrayList<DataModel> models = this.dataProvider.getData(
-			session.getZipCode(),
-			session.getType()
-		);
+		ArrayList<DataModel> models = new ArrayList<DataModel>();
+	
+		if (session.isMap()) {
+			models = this.dataProvider.getData(session.getType());
+		}
+		else {
+			models = this.dataProvider.getData(
+				session.getZipCode(),
+				session.getType()
+			);
+		}
 		
 		session.updateData(models);
 	}

@@ -57,27 +57,32 @@ public class ClientSession extends AbstractSession
 		}).start();
 	}
 	
-	public void updateStatistics(int stationCount, int clientCount) {
+	public void updateStatistics(int clientCount, int stationCount) {
 		if (this.socket.isClosed()) {
 			this.disposeInternal();
 		}
 		else {		
 			this.writeObject(
-				new WrapperModel(new StatisticModel(stationCount, clientCount))
+				new WrapperModel(new StatisticModel(clientCount, stationCount))
 			);
 		}
 	}
 	
 	synchronized public void updateData(ArrayList<DataModel> models) {
-		System.out.println("Model length: " + models.size());
 		this.writeObject(new WrapperModel(models));
 	}
 	
 	synchronized public boolean matchModel(DataModel model) {
-		return (this.zipCode != null && this.type >= 0) &&
-				(model.getZipCode().endsWith("*") && model.getZipCode().substring(0, 1).equals(this.zipCode.substring(0,  1)) && this.type == model.getType()) || 
-				this.zipCode != null && this.type  >= 0 && model.getZipCode().equals(this.zipCode) && this.type == model.getType() || 
-				this.zipCode != null && this.type  >= 0 && this.zipCode.startsWith(model.getZipCode()) && this.type == model.getType(); 
+		String zipCode = model.getZipCode();
+		
+		if (zipCode.length() == 2 && zipCode.endsWith("*")) {
+			return zipCode.substring(0, 1).equals(this.zipCode.substring(0, 1));
+		}
+		else if (this.zipCode.length() == 2 && this.zipCode.endsWith("*")) {
+			return this.zipCode.substring(0, 1).equals(zipCode.substring(0, 1));
+		}
+		
+		return zipCode.length() <= 2 && zipCode.equals(this.zipCode);
 	}
 	
 	synchronized private void writeObject(WrapperModel model) {
@@ -110,6 +115,6 @@ public class ClientSession extends AbstractSession
 	}
 	
 	public boolean isMap() {
-		return this.map;
+		return this.map && this.type >= 0;
 	}
 }

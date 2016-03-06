@@ -2,7 +2,7 @@ package weathersuite.models;
 
 import java.io.*;
 
-public class DataModel implements Serializable
+public class DataModel implements Serializable, Comparable<DataModel>
 {
 	private static final long serialVersionUID = 1L;
 	
@@ -79,5 +79,19 @@ public class DataModel implements Serializable
 		}
 		
 		return retType;
+	}
+
+	@Override
+	public int compareTo(DataModel model) {
+		int ret = -1;
+		
+		try {
+			ret = Integer.parseInt(model.getZipCode()) > Integer.parseInt(this.zipCode) ? -1 : 1;	
+		}
+		catch(NumberFormatException e) {
+			// Ignore
+		}
+		
+		return ret;
 	}
 }

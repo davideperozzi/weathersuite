@@ -5,6 +5,10 @@ import java.awt.event.WindowListener;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+
+import javax.swing.JFrame;
 
 import weathersuite.client.*;
 import weathersuite.models.DataModel;
@@ -24,6 +28,8 @@ public class Client
 		this.port = port;
 		
 		this.frame = new ClientFrame("Weather Client");
+		this.frame.setBounds(100, 100, 600, 480);
+		this.frame.setVisible(true);
 		this.frame.addWindowListener(new WindowListener(){
 			@Override
 			public void windowClosing(WindowEvent e) {		
@@ -52,9 +58,6 @@ public class Client
 				);
 			}
 		});
-		
-		this.frame.setSize(600, 600);
-		this.frame.setVisible(true);
 	}
 	
 	public void connect() {
@@ -132,15 +135,94 @@ public class Client
 	}
 	
 	synchronized private void processInput(StatisticModel model) {
-		this.frame.setClientCounter(Integer.toString(model.clientCount));
-		this.frame.setStationCounter(Integer.toString(model.stationCount));
+		this.frame.setClientCounter(model.clientCount);
+		this.frame.setStationCounter(model.stationCount);
+	}
+	
+	synchronized static String parseStatus(String status) {
+		try {
+			return parseStatus(Math.round(Float.parseFloat(status)));
+		} 
+		catch (NumberFormatException e) {
+			e.printStackTrace();
+		}
+		
+		return "";
+	}
+	
+	synchronized static String parseStatus(int status) {
+		switch (status) {
+			case 9: return "sonnig"; 
+			case 8: return "meist Sonnig";
+			case 7: return "teils wolkig";
+			case 6: return "bedeckt";
+			case 5: return "Leichter Regen";
+			case 4: return "Regen";
+			case 3: return "Nebel";
+			case 2: return "Leichter Schneefall";
+			case 1: return "Schneefall";
+		}
+		
+		return "Unbekannt";
 	}
 
 	synchronized private void processInput(ArrayList<DataModel> models) {
-		for (DataModel model : models) {
-			System.out.println(model.getZipCode() + ": " + model.getValue());
-		}
+		if (models.size() > 0) {
+			String value = "";
+			
+			if (this.frame.isMap()) {
+				// Sort models
+				Collections.sort(models);
+				
+				// Columns
+				int columns = 5;
+				
+				for (int i = 0, len = models.size(); i < len; i++) {
+					DataModel model = models.get(i);
+					String modelValue = this.frame.getTypeKey().equals("s") 
+							? parseStatus(model.getValue()) 
+							: model.getValue();
 		
-		System.out.println("----------------------------------------");
+					value += model.getZipCode();
+					value +=  ": " + modelValue + " " + this.frame.getUnit();
+					
+					if (i % columns == 0) {
+						value += "\n\n";
+					}
+					else {
+						value += "  |  ";
+					}
+				}
+			}
+			else {
+				if (this.frame.getLocationFieldText().endsWith("*")) {
+					double sum = 0;
+					
+					for (DataModel model : models) {
+						sum += Double.parseDouble(model.getValue());
+					}
+					
+					sum /= models.size();
+					sum = Math.round(sum);
+					
+					value = Double.toString(sum);
+				}
+				else {
+					value = models.get(0).getValue();
+				}
+				
+				if (this.frame.getTypeKey().equals("s")) {
+					value = parseStatus(value);
+				}
+				else {
+					value += " " + this.frame.getUnit();
+				}
+			}
+			
+			this.frame.setOutputText(value);
+		}
+		else {
+			this.frame.setOutputText("Keine Wetterdaten vorhanden...");
+		}
 	}
 }

@@ -46,15 +46,41 @@ public class DataProvider
 		return this.data;
 	}
 	
+	public ArrayList<DataModel> getData(String type) {
+		return this.getData(DataModel.parseType(type));
+	}
+	
+	public ArrayList<DataModel> getData(int type) {
+		ArrayList<DataModel> models = new ArrayList<DataModel>();
+		
+		for (DataModel model : this.data) {
+			if (model.getType() == type) {
+				models.add(model);
+			}
+		}
+		
+		return models;
+	}
+	
 	public ArrayList<DataModel> getData(String zipCode, String type) {
 		return this.getData(zipCode, DataModel.parseType(type));
 	}
 	
 	public ArrayList<DataModel> getData(String zipCode, int type) {
 		ArrayList<DataModel> models = new ArrayList<DataModel>();
+		boolean wildcard = zipCode.endsWith("*");
 		
 		for (DataModel model : this.data) {
-			if ((model.getZipCode().matches(zipCode) || model.getZipCode().startsWith(zipCode)) && model.getType() == type) {
+			if (model.getType() != type) {
+				continue;
+			}
+			
+			if (wildcard) {
+				if (model.getZipCode().substring(0, 1).equals(zipCode.substring(0, 1))) {
+					models.add(model);
+				}
+			}
+			else if (model.getZipCode().equals(zipCode)) {
 				models.add(model);
 			}
 		}
@@ -74,40 +100,36 @@ public class DataProvider
 	}
 	
 	synchronized public DataModel setDataByZipCode(String zipCode, String type, String value) {
-		boolean found = false;
 		DataModel retModel = null;
 		boolean wildcard = zipCode.endsWith("*");
-		
-		System.out.println("Set " + zipCode);
+		boolean found = false;
 		
 		// Update data with same zipcode and type
 		for (DataModel model : this.data) {
 			boolean typeMatch = model.getType() == DataModel.parseType(type);
 			
 			if (wildcard) {
-				if (model.getZipCode().startsWith(zipCode.substring(0, 1)) && !model.getZipCode().endsWith("*") && typeMatch) {
+				if (model.getZipCode().startsWith(zipCode.substring(0, 1)) && !model.getZipCode().endsWith("*") && typeMatch) {					
 					model.setValue(value);
 				}
 			}
-			
-			if (model.getZipCode().equals(zipCode) && typeMatch) {
+			else if (model.getZipCode().equals(zipCode) && typeMatch) {
 				model.setValue(value);
 				retModel = model;
 				found = true;
 				
-				// Exit loop if no wildcard is active
-				// to ensure that all data related to 
-				// the wildcard will be updated
-				if (!wildcard) {
-					break;
-				}
+				break;
 			}
 		}
 		
 		// Add new data model
-		if ( ! found) {
+		if ( ! found && ! wildcard) {
 			retModel = new DataModel(zipCode, type, value);
 			this.data.add(retModel);
+		}
+		else if (wildcard) {
+			// Return sample model to work with
+			return new DataModel(zipCode, type, value);
 		}
 		
 		return retModel;
@@ -137,11 +159,20 @@ public class DataProvider
 			}
 		}
 		
-		if ( ! zipCode.isEmpty() && ! type.isEmpty() && ! value.isEmpty()) {
+		boolean error = false;
+		
+		try {
+			Integer.parseInt(zipCode);
+		}
+		catch(NumberFormatException e) {
+			error = true;
+		}
+		
+		if ( ! zipCode.isEmpty() && ! type.isEmpty() && ! value.isEmpty() && ! error) {
 			model = this.setDataByZipCode(zipCode, type, value);
 		}
 		else {
-			System.err.println("Data not complete!");
+			System.err.println("Data not complete or invalid!");
 		}
 		
 		return model;
