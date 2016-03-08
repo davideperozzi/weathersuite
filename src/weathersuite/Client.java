@@ -6,7 +6,6 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 import weathersuite.client.*;
 import weathersuite.models.DataModel;

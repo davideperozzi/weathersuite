@@ -1,7 +1,8 @@
 package weathersuite.server;
-import java.awt.*;
 import javax.swing.*;
 import javax.swing.table.*;
+
+import net.miginfocom.swing.MigLayout;
 
 public class ServerFrame extends JFrame
 {
@@ -12,6 +13,7 @@ public class ServerFrame extends JFrame
 	private DefaultTableModel stationModel;
 	private JLabel clientLabel;
 	private JTable clientTable;
+	private JTextArea logArea;
 	private DefaultTableModel clientModel;
 	private int stationCounter = 0;
 	private int clientCounter = 0;
@@ -19,45 +21,57 @@ public class ServerFrame extends JFrame
 	public ServerFrame(String title) {
 		super(title);
 		
-		// Create Grid-Layout panel
-		JPanel panel = new JPanel(new GridLayout(2, 2));
+		this.getContentPane().setLayout(
+			new MigLayout("", "[][grow][grow]", "[][][][grow][grow]")
+		);
 		
-		// Create client label
-		panel.add(this.clientLabel = new JLabel());
+		// Client label
+		this.getContentPane().add(this.clientLabel = new JLabel(), "cell 1 1");
 		this.updateClientLabel();
+		
+		// Station label
+		this.getContentPane().add(this.stationLabel = new JLabel(), "cell 2 1");
+		this.updateStationLabel();
+		
+		JScrollPane scrollPane = new JScrollPane();
+		this.getContentPane().add(scrollPane, "cell 1 3,grow");
 		
 		// Create client table
 		this.clientModel = new DefaultTableModel();
 		this.clientTable = new JTable(this.clientModel);
 		
-		panel.add(new JScrollPane(this.clientTable));
+		scrollPane.setViewportView(this.clientTable);
 		
 		this.clientModel.addColumn("Session ID");
 		this.clientModel.addColumn("IP-Address");
 		
-		// Create station table label
-		panel.add(this.stationLabel = new JLabel());
-		this.updateStationLabel();
-		
 		// Create station table
+		JScrollPane scrollPane2 = new JScrollPane();
+		this.getContentPane().add(scrollPane2, "cell 2 3,grow");
+		
 		this.stationModel = new DefaultTableModel();
 		this.stationTable = new JTable(this.stationModel);
 		
-		panel.add(new JScrollPane(this.stationTable));
+		scrollPane2.setViewportView(this.stationTable);
 		
 		this.stationModel.addColumn("Session ID");
 		this.stationModel.addColumn("IP-Address");
 		
-		// Add panel
-		this.add(panel);
+		JScrollPane scrollPane3 = new JScrollPane();
+		this.getContentPane().add(scrollPane3, "cell 1 4 2 1,grow");
+		
+		// Create log text area
+		this.logArea = new JTextArea();
+		this.logArea.setText("Log...");
+		scrollPane3.setViewportView(this.logArea);
 	}
 	
 	private void updateStationLabel() {
-		this.stationLabel.setText("Connected stations (" + this.stationCounter + "): ");
+		this.stationLabel.setText("Stationen (" + this.stationCounter + ")");
 	}
 	
 	private void updateClientLabel() {
-		this.clientLabel.setText("Connected clients (" + this.clientCounter + "): ");
+		this.clientLabel.setText("Clients (" + this.clientCounter + ")");
 	}
 	
 	public void addStation(String id, String ipAddress) {
