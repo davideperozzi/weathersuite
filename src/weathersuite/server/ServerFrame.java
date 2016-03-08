@@ -42,6 +42,7 @@ public class ServerFrame extends JFrame
 		// Create client table
 		this.clientModel = new DefaultTableModel();
 		this.clientTable = new JTable(this.clientModel);
+		this.clientTable.setEnabled(false);
 		
 		scrollPane.setViewportView(this.clientTable);
 		
@@ -54,6 +55,7 @@ public class ServerFrame extends JFrame
 		
 		this.stationModel = new DefaultTableModel();
 		this.stationTable = new JTable(this.stationModel);
+		this.stationTable.setEnabled(false);
 		
 		scrollPane2.setViewportView(this.stationTable);
 		

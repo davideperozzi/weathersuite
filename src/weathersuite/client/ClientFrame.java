@@ -79,7 +79,7 @@ public class ClientFrame extends JFrame
 		this.locationField = new JTextField();
 		this.locationField.setFont(new Font("Arial", Font.PLAIN, 18));
 		this.locationField.setForeground(new Color(122, 122, 122));
-		this.locationField.setColumns(10);
+		this.locationField.setColumns(15);
 		this.locationField.setText(locationPlaceholder);
 		this.locationField.addFocusListener(new FocusListener() {
 			@Override
@@ -145,6 +145,12 @@ public class ClientFrame extends JFrame
 	private void updatePerformed() {
 		String text = this.locationField.getText();
 		
+		this.lastType = this.typeSelection.getSelectedItem().toString();
+		this.lastLocation = this.regionsFeatureEnabled && this.regions.containsKey(text)
+				? this.regions.get(text).toString() 
+				: this.locationField.getText();
+		this.lastWeathermap = this.weathermapCheckbox.getState() ? 1 : 0;
+		
 		if (this.isMap()) {
 			this.updateCredentials();
 		}
@@ -181,16 +187,8 @@ public class ClientFrame extends JFrame
 	}
 	
 	private void updateCredentials() {
-		if (this.formListener != null) {
-			String location = this.locationField.getText();
-			
-			this.formListener.onUpdate(
-				this.lastType = this.typeSelection.getSelectedItem().toString(), 
-				this.lastLocation = this.regionsFeatureEnabled && this.regions.containsKey(location)
-					? this.regions.get(location).toString() 
-					: this.locationField.getText(),
-				this.lastWeathermap = this.weathermapCheckbox.getState() ? 1 : 0
-			);
+		if (this.formListener != null) {	
+			this.formListener.onUpdate(this.lastType, this.lastLocation, this.lastWeathermap);
 		}
 	}
 	
@@ -248,7 +246,7 @@ public class ClientFrame extends JFrame
 		return this.units.get(key);
 	}
 	
-	public boolean isMap() {
+	public boolean isMap() {		
 		if (this.lastWeathermap >= 0) {
 			return this.lastWeathermap == 1 ? true : false;
 		}
