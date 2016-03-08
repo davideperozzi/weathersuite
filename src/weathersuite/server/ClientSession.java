@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 
-import weathersuite.Client;
 import weathersuite.models.DataModel;
 import weathersuite.models.StatisticModel;
 import weathersuite.models.WrapperModel;

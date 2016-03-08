@@ -2,6 +2,9 @@ package weathersuite.client;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 
 import javax.swing.*;
@@ -11,8 +14,9 @@ import net.miginfocom.swing.MigLayout;
 public class ClientFrame extends JFrame
 {
 	private static final long serialVersionUID = 1L;
+	public static String REGION_FILE = "regions.csv";
+	public static String locationPlaceholder = "Region";
 	
-	public static String locationPlaceholder = "Region...";
 	private FormListener formListener;
 	private JLabel clientCounterLabel;
 	private JLabel stationCounterLabel;
@@ -24,6 +28,8 @@ public class ClientFrame extends JFrame
 	private int stationCounter = 0;
 	private HashMap<String, String> types = new HashMap<String, String>();
 	private HashMap<String, String> units = new HashMap<String, String>();
+	private HashMap<String, Integer> regions = new HashMap<String, Integer>();
+	private boolean regionsFeatureEnabled = false;
 
 	public ClientFrame(String title) {
 		super(title);
@@ -152,7 +158,10 @@ public class ClientFrame extends JFrame
 				try {
 					int plz = -1;
 					
-					if (text.endsWith("*") && text.length() == 2) {
+					if (this.regionsFeatureEnabled && this.regions.get(text) != null) {
+						plz = this.regions.get(text);
+					}
+					else if (text.endsWith("*") && text.length() == 2) {
 						plz = Integer.parseInt(text.substring(0, 1));
 					}
 					else {
@@ -163,11 +172,11 @@ public class ClientFrame extends JFrame
 						this.updateCredentials();
 					}
 					else {
-						this.showError("Bitte gültige Region eingeben (0-99)");
+						this.showError("Bitte gültige Region eingeben");
 					}
 				}
 				catch (NumberFormatException e) {
-					this.showError("Region: Ungültige Zahl");
+					this.showError("Bitte gültige Region eingeben");
 				}
 			}
 		}
@@ -175,9 +184,13 @@ public class ClientFrame extends JFrame
 	
 	private void updateCredentials() {
 		if (this.formListener != null) {
+			String location = this.locationField.getText();
+			
 			this.formListener.onUpdate(
 				this.typeSelection.getSelectedItem().toString(), 
-				this.locationField.getText(),
+				this.regionsFeatureEnabled && this.regions.containsKey(location)
+					? this.regions.get(location).toString() 
+					: this.locationField.getText(),
 				this.weathermapCheckbox.getState() ? 1 : 0
 			);
 		}
@@ -235,5 +248,50 @@ public class ClientFrame extends JFrame
 	
 	public boolean isMap() {
 		return this.weathermapCheckbox.getState();
+	}
+	
+	public void readRegions() {
+		this.regionsFeatureEnabled = true;
+		
+		try {
+			@SuppressWarnings("resource")
+			BufferedReader in = new BufferedReader(new FileReader(REGION_FILE));
+			String line;
+			
+			while ((line = in.readLine()) != null && line.length() > 0) {
+				String[] parts = line.split("\\t");
+				
+				if (parts.length == 2) {
+					int id = -1;
+					
+					parts[0] = parts[0].trim();
+					parts[1] = parts[1].trim();
+					
+					try {
+						id = Integer.parseInt(parts[0]);
+					}
+					catch (NumberFormatException e) {
+						continue;
+					}
+					
+					if (parts[1].startsWith("– ") || parts[1].startsWith("-")) {
+						continue;
+					}
+					
+					String[] regions = parts[1].split(","); 
+					
+					for (String region : regions) {
+						this.regions.put(region.trim(), id);
+					}
+				}
+			}
+		} 
+		catch (IOException e) {	
+			this.regionsFeatureEnabled = false;
+		}
+		
+		if ( ! this.regionsFeatureEnabled) {
+			System.out.println("Warnung: Textuelle Ortseingaben wurden deaktiviert!");
+		}
 	}
 }

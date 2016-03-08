@@ -14,11 +14,9 @@ import weathersuite.server.SessionInteraction;
 import weathersuite.server.StationSession;
 
 public class Server
-{	
-	public static int STATION_PORT;
-	public static int CLIENT_PORT; 
-	public static int UPDATE_INTERVAL;
-	
+{		
+	private int stationPort;
+	private int clientPort;
 	private ServerSocket clientServerSocket;
 	private ServerSocket stationServerSocket;
 	private ArrayList<ClientSession> clients = new ArrayList<ClientSession>();
@@ -27,14 +25,9 @@ public class Server
 	private ServerFrame frame;
 	
 	public Server(int stationPort, int clientPort) {
-		this(stationPort, clientPort, 1000);
-	}
-	
-	public Server(int stationPort, int clientPort, int updateInterval) {
-		// Set static configs
-		STATION_PORT = stationPort;
-		CLIENT_PORT = clientPort;
-		UPDATE_INTERVAL = updateInterval;
+		// Set configs
+		this.stationPort = stationPort;
+		this.clientPort = clientPort;
 		
 		// Setup Frame
 		this.frame = new ServerFrame("Weather Server");		
@@ -73,8 +66,8 @@ public class Server
 		
 		// Create server sockets
 		try {
-			this.clientServerSocket = new ServerSocket(clientPort);
-			this.stationServerSocket = new ServerSocket(stationPort);
+			this.clientServerSocket = new ServerSocket(this.clientPort);
+			this.stationServerSocket = new ServerSocket(this.stationPort);
 		}
 		catch (BindException e) {
 			System.err.println("Something went wrong while creating the Server sockets. \n"
@@ -198,7 +191,7 @@ public class Server
 	synchronized private void disconnect(StationSession session) {
 		ArrayList<Integer> removeIndicies = new ArrayList<Integer>();
 		
-		// Collect indices to remove and remove active
+		// Collect indices to remove the
 		// station from the frame table
 		for (StationSession station : this.stations) {
 			if (station.getUid().equals(session.getUid())) {
@@ -250,8 +243,8 @@ public class Server
 	synchronized private void disconnect(ClientSession session) {
 		ArrayList<Integer> removeIndicies = new ArrayList<Integer>();
 		
-		// Collect indices to remove and remove active 
-		// station from the frame table
+		// Collect indices to remove the
+		// client from the frame table
 		for (ClientSession client : this.clients) {
 			if (client.getUid().equals(session.getUid())) {
 				int index = this.clients.indexOf(client);

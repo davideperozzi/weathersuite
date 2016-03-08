@@ -5,10 +5,8 @@ import java.awt.event.WindowListener;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-
-import javax.swing.JFrame;
+import java.util.HashMap;
 
 import weathersuite.client.*;
 import weathersuite.models.DataModel;
@@ -16,24 +14,29 @@ import weathersuite.models.StatisticModel;
 import weathersuite.models.WrapperModel;
 
 public class Client 
-{
+{	
 	private String host;
 	private int port;
 	private Socket socket;
 	private ClientFrame frame;
 	private ObjectOutputStream out;
+	private boolean connectionResetActive;
+	final static int TIMEOUT_RESET = 10;
 	
 	public Client(String host, int port) {
 		this.host = host;
 		this.port = port;
 		
 		this.frame = new ClientFrame("Weather Client");
-		this.frame.setBounds(100, 100, 600, 480);
+		this.frame.setBounds(100, 100, 800, 680);
 		this.frame.setVisible(true);
+		this.frame.readRegions();
 		this.frame.addWindowListener(new WindowListener(){
 			@Override
-			public void windowClosing(WindowEvent e) {		
-				Client.this.disconnect();
+			public void windowClosing(WindowEvent e) {
+				if (Client.this.socket != null) {
+					Client.this.disconnect();
+				}
 				System.exit(1);
 			}
 			@Override
@@ -53,15 +56,22 @@ public class Client
 		this.frame.addFormListener(new FormListener() {
 			@Override
 			public void onUpdate(String type, String location, int map) {
-				Client.this.writeObject(
-					new WrapperModel(new DataModel(location, type, map >= 1 ? true : false))
-				);
+				if (Client.this.socket != null && !Client.this.socket.isClosed()) {
+					Client.this.writeObject(
+						new WrapperModel(new DataModel(location, type, map >= 1 ? true : false))
+					);
+				}
+				else {
+					Client.this.connectionReset();
+				}
 			}
 		});
 	}
 	
 	public void connect() {
 		try {
+			this.connectionResetActive = false;
+			this.frame.setOutputText("Verbinde...");
 			this.socket = new Socket(this.host, this.port);
 			
 			try {
@@ -76,7 +86,9 @@ public class Client
 					
 					try {
 						input = new ObjectInputStream(Client.this.socket.getInputStream());
-
+						
+						Client.this.frame.setOutputText("");
+						
 						while (true) {
 							WrapperModel wrapper = (WrapperModel)input.readObject();
 							
@@ -111,8 +123,43 @@ public class Client
 			}).start();
 		} 
 		catch (IOException e) {
-			e.printStackTrace();
+			this.connectionReset();
 		}
+	}
+	
+	private void connectionReset() {
+		if (this.connectionResetActive) {
+			return;
+		}
+		
+		this.connectionResetActive = true;
+		final String connectMsg = "Verbindung zum Server fehlgeschlagen!\n"
+				+ "Erneuter Verbindungsversuch in %s Sekunde(n).";
+		
+		this.frame.setOutputText(String.format(connectMsg, TIMEOUT_RESET));
+		
+		(new Thread(){
+			private int secondsLast = TIMEOUT_RESET;
+			
+			public void run() {
+				while (true) {
+					try {
+						sleep(1000);
+					} 
+					catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
+					Client.this.frame.setOutputText(String.format(connectMsg, --secondsLast));
+					
+					if (secondsLast <= 0) {
+						Client.this.connect();
+						this.interrupt();
+						break;
+					}
+				}
+			}
+		}).start();
 	}
 	
 	public void disconnect() {
@@ -182,16 +229,18 @@ public class Client
 					String modelValue = this.frame.getTypeKey().equals("s") 
 							? parseStatus(model.getValue()) 
 							: model.getValue();
+					
+					if (i > 0) {
+						if (i % columns == 0) {
+							value += "\n\n";
+						}
+						else {
+							value += "  |  ";
+						}
+					}
 		
 					value += model.getZipCode();
 					value +=  ": " + modelValue + " " + this.frame.getUnit();
-					
-					if (i % columns == 0) {
-						value += "\n\n";
-					}
-					else {
-						value += "  |  ";
-					}
 				}
 			}
 			else {
@@ -222,7 +271,7 @@ public class Client
 			this.frame.setOutputText(value);
 		}
 		else {
-			this.frame.setOutputText("Keine Wetterdaten vorhanden...");
+			this.frame.setOutputText("Keine Wetterdaten vorhanden");
 		}
 	}
 }

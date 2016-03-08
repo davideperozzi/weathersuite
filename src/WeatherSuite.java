@@ -3,22 +3,20 @@ import weathersuite.*;
 public class WeatherSuite 
 {
 	public static void showHelp() {
-		System.out.println(
-				"Please use the following arguments to run a program: \n"
-				+ "weathersuite mode arg1 arg2 ... \n"
-				+ "\t client host port \n"
-				+ "\t server station-port client-port [update-interval]\n\n"
-				+ "\t E.g. running a server: \n"
-				+ "\t weathersuite server 5555 5556 \n\n"
-				+ "\t E.g. starting a client: \n"
-				+ "\t weathersuite client localhost 5556"
+		System.out.println("Usage: java -jar weathersuite.jar [MODE] [ARG1] [ARG2] [...] \n\n"
+				+ "client: [ARG1:host] [ARG2:port] \n"
+				+ "server: [ARG1:station-port] [ARG2:client-port] \n\n"
+				+ "Example running a server: \n"
+				+ "weathersuite server 5555 5556 \n\n"
+				+ "Example starting a client: \n"
+				+ "weathersuite client localhost 5556"
 		);
 	}
 
 	public static void main(String[] args) {
 		if (args.length >= 1) {
 			// Detect mode (server or client)
-			String mode = args[0];
+			String mode = args[0].trim();
 			
 			if (!mode.equals("client") && !mode.equals("server")) {
 				System.err.println("Please decide which program you want to run.");
@@ -28,7 +26,6 @@ public class WeatherSuite
 				if (mode.equals("server")) {
 					int stationPort = 0;
 					int clientPort = 0;
-					int updateInterval = 0;
 					
 					// Get the station and client port
 					if (args.length >= 2) {
@@ -38,10 +35,6 @@ public class WeatherSuite
 						
 						if (args.length >= 3 && args[2] != null) {
 							clientPort = Integer.parseInt(args[2]);
-						}
-						
-						if (args.length >= 4 && args[3] != null) {
-							updateInterval = Integer.parseInt(args[3]);
 						}
 					}
 					else if (args.length < 1) {
@@ -53,16 +46,7 @@ public class WeatherSuite
 						System.err.println("The given ports are invalid");
 					}
 					else {
-						Server server;
-						
-						if (updateInterval > 0) {
-							server = new Server(stationPort, clientPort, updateInterval);
-						}
-						else {
-							server = new Server(stationPort, clientPort);
-						}
-						
-						server.run();
+						(new Server(stationPort, clientPort)).run();
 					}
 				}
 				else if (mode.equals("client")) {
@@ -89,8 +73,7 @@ public class WeatherSuite
 						System.err.println("The given server port is invalid");
 					}
 					else {
-						Client client = new Client(host, serverPort);
-						client.connect();
+						(new Client(host, serverPort)).connect();
 					}
 				}
 			}

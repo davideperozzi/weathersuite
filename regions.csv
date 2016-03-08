@@ -1,0 +1,100 @@
+00	– (wird nicht vergeben)
+01 	Dresden, Riesa, Meißen, Bischofswerda
+02 	Görlitz, Bautzen, Hoyerswerda, Zittau
+03 	Cottbus, Finsterwalde, Forst (Lausitz), Spremberg
+04 	Leipzig, Altenburg, Eilenburg, Torgau
+05 	– (Reserve)
+06 	Halle (Saale), Dessau-Roßlau, Quedlinburg, Zeitz
+07 	Gera, Jena, Saalfeld/Saale, Greiz
+08 	Plauen, Zwickau, Aue, Klingenthal
+09 	Chemnitz, Annaberg-Buchholz, Zschopau, Freiberg
+10 	Berlin Innenstadt
+11 	Bundesinstitutionen in Berlin
+12 	Südliches und südöstliches Berlin
+13 	Nördliches Berlin
+14 	Potsdam und südwestliches Berlin, Rathenow, Luckenwalde, Brandenburg an der Havel
+15 	Frankfurt (Oder), Eisenhüttenstadt, Fürstenwalde/Spree, Königs Wusterhausen
+16 	Oranienburg, Eberswalde, Pritzwalk, Schwedt/Oder
+17 	Neubrandenburg, Greifswald, Neustrelitz, Usedom
+18 	Rostock, Stralsund, Güstrow, Bergen auf Rügen
+19 	Schwerin, Ludwigslust, Wittenberge, Parchim
+20 	Hamburg Mitte
+21 	Südliches und östliches Hamburg und Umland, Lüneburg, Buxtehude, Stade, Reinbek
+22 	Hamburg Nord/West, Norderstedt, Ahrensburg, Wedel
+23 	Lübeck, Bad Segeberg, Wismar, Mölln
+24 	Kiel, Flensburg, Schleswig, Neumünster
+25 	Westküste (Elmshorn, Itzehoe, Sylt)
+26 	Oldenburg, Wilhelmshaven, Emden, Aurich
+27 	Großraum Bremen Bremerhaven, Cuxhaven, Delmenhorst, Helgoland, Neuwerk
+28 	Bremen, Ottersberg, Schwanewede, Syke, Stuhr, Weyhe
+29 	Celle, Uelzen, Salzwedel, Lüchow
+30 	Hannover, Garbsen, Langenhagen, Laatzen
+31 	Hannover Umland, Hameln, Hildesheim, Peine, Schaumburg
+32 	Herford, Minden, Detmold, Löhne
+33 	Bielefeld, Paderborn, Bad Driburg, Gütersloh
+34 	Kassel, Hannoversch Münden, Korbach, Warburg
+35 	Gießen, Wetzlar, Marburg, Dillenburg
+36 	Fulda, Bad Hersfeld, Bad Salzungen, Alsfeld
+37 	Göttingen, Höxter, Eschwege, Osterode am Harz
+38 	Braunschweig, Salzgitter, Wolfsburg, Halberstadt
+39 	Magdeburg, Stendal, Oschersleben, Staßfurt
+40 	Düsseldorf, Hilden, Mettmann, Ratingen
+41 	Mönchengladbach, Neuss, Viersen, Erkelenz
+42 	Wuppertal, Velbert, Solingen, Remscheid
+43 	– (Reserve)
+44 	Dortmund, Lünen, Herne, Bochum
+45 	Essen, Mülheim an der Ruhr, Recklinghausen, Gelsenkirchen
+46 	Oberhausen, Bottrop, Bocholt, Wesel
+47 	Duisburg, Krefeld, Moers, Kleve, Wesel
+48 	Münster, Rheine, Nordhorn, Coesfeld
+49 	Osnabrück, Melle, Ibbenbüren, Lingen (Ems)
+50 	Köln (linksrheinisch plus Deutz), Frechen, Brühl, Bergheim
+51 	Köln (rechtsrheinisch ohne Deutz), Leverkusen, Bergisch Gladbach, Gummersbach
+52 	Aachen, Eschweiler, Düren, Heinsberg
+53 	Bonn, Remagen, Siegburg, Euskirchen
+54 	Trier, Wittlich, Daun, Prüm, Bitburg
+55 	Mainz, Simmern/Hunsrück, Bad Kreuznach, Idar-Oberstein
+56 	Koblenz, Neuwied, Mayen, Andernach
+57 	Siegen, Lennestadt, Olpe, Altenkirchen (Westerwald)
+58 	Hagen, Witten, Iserlohn, Lüdenscheid
+59 	Hamm, Unna, Soest, Arnsberg
+60 	Frankfurt am Main Mitte
+61 	Bad Homburg, Friedberg, Bad Vilbel, Oberursel
+62 	– (Reserve)
+63 	Aschaffenburg, Hanau, Offenbach am Main, Miltenberg
+64 	Darmstadt, Bensheim, Heppenheim, Groß-Gerau
+65 	Wiesbaden, Limburg an der Lahn, Rüsselsheim am Main, Frankfurt am Main-West
+66 	Saarbrücken, Neunkirchen, Homburg, Pirmasens, Zweibrücken
+67 	Kaiserslautern, Ludwigshafen am Rhein, Worms, Speyer
+68 	Mannheim, Schwetzingen, Lampertheim, Viernheim
+69 	Heidelberg, Weinheim, Leimen, Mannheim (nur Postfächer)
+70 	Stuttgart, Fellbach, Leinfelden-Echterdingen, Filderstadt
+71 	Stuttgarter Umland, Böblingen, Waiblingen, Backnang, Ludwigsburg
+72 	Tübingen, Reutlingen, Sigmaringen, Freudenstadt, Balingen, Nürtingen
+73 	Göppingen, Esslingen am Neckar, Schwäbisch Gmünd, Aalen
+74 	Heilbronn, Bietigheim-Bissingen, Schwäbisch Hall, Crailsheim
+75 	Pforzheim, Eppingen, Calw, Mühlacker
+76 	Karlsruhe, Baden-Baden, Landau in der Pfalz, Bruchsal
+77 	Offenburg, Lahr, Kehl, Achern, Bühl
+78 	Villingen-Schwenningen, Donaueschingen, Singen (Hohentwiel), Konstanz, Tuttlingen, Rottweil
+79 	Freiburg im Breisgau, Lörrach, Titisee-Neustadt, Waldshut-Tiengen, Emmendingen
+80 	München Mitte-Nordwest
+81 	München West, Süd, Ost
+82 	Münchener Umland (Süd, West), Fürstenfeldbruck, Starnberg, Garmisch-Partenkirchen
+83 	Rosenheim, Traunstein, Freilassing, Bad Tölz
+84 	Landshut, Waldkraiburg, Dingolfing, Pfarrkirchen
+85 	Münchener Umland (Nord, Ost), Ingolstadt, Dachau, Freising, Eichstätt
+86 	Augsburg, Donauwörth, Landsberg am Lech, Neuburg a.Donau
+87 	Kempten, Kaufbeuren, Memmingen, Marktoberdorf
+88 	Friedrichshafen, Lindau (Bodensee), Ravensburg, Biberach an der Riß
+89 	Ulm, Neu-Ulm, Heidenheim an der Brenz, Ehingen (Donau)
+90 	Nürnberg, Fürth, Zirndorf
+91 	Nürnberger Umland, Erlangen, Schwabach, Ansbach, Dinkelsbühl
+92 	Amberg, Neumarkt in der Oberpfalz, Weiden in der Oberpfalz, Schwandorf
+93 	Regensburg, Cham, Kelheim, Abensberg
+94 	Passau, Landau an der Isar, Regen, Straubing
+95 	Hof, Bayreuth, Kulmbach, Marktredwitz
+96 	Bamberg, Lichtenfels, Coburg, Sonneberg
+97 	Würzburg, Schweinfurt, Bad Kissingen, Wertheim
+98 	Suhl, Hildburghausen, Ilmenau, Meiningen
+99 	Erfurt, Weimar, Mühlhausen/Thüringen, Eisenach

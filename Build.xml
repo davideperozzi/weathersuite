@@ -5,9 +5,10 @@
     <!--define folder properties-->
     <property name="dir.buildfile" value="."/>
     <property name="dir.workspace" value="${dir.buildfile}/.."/>
-    <property name="dir.jarfile" value="C:/Users/tripl/Desktop"/>
+    <property name="dir.jarfile" value="${dir.buildfile}/jar"/>
     <target name="create_run_jar">
         <jar destfile="${dir.jarfile}/weathersuite.jar" filesetmanifest="mergewithoutmain">
+        	<zipgroupfileset dir="lib" includes="miglayout15-swing.jar" />
             <manifest>
                 <attribute name="Main-Class" value="WeatherSuite"/>
                 <attribute name="Class-Path" value="."/>

@@ -10,9 +10,7 @@ public class StationSession extends AbstractSession
 		super(socket);
 	}
 	
-	public void run() {
-		System.out.println("Run Station session");
-		
+	public void run() {		
 		try {
 			BufferedReader in = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
 			String line;
