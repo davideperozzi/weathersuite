@@ -1,4 +1,7 @@
 package weathersuite.server;
+import java.awt.Dimension;
+import java.util.ArrayList;
+
 import javax.swing.*;
 import javax.swing.table.*;
 
@@ -57,13 +60,39 @@ public class ServerFrame extends JFrame
 		this.stationModel.addColumn("Session ID");
 		this.stationModel.addColumn("IP-Address");
 		
-		JScrollPane scrollPane3 = new JScrollPane();
+		final JScrollPane scrollPane3 = new JScrollPane();
 		this.getContentPane().add(scrollPane3, "cell 1 4 2 1,grow");
+		
+		scrollPane3.setMaximumSize(new Dimension(Integer.MAX_VALUE, 300));
 		
 		// Create log text area
 		this.logArea = new JTextArea();
-		this.logArea.setText("Log...");
+		this.logArea.setEditable(false);
 		scrollPane3.setViewportView(this.logArea);
+		this.setLogAreaText(Logger.getLines());
+		
+		JScrollBar vertical = scrollPane3.getVerticalScrollBar();
+		vertical.setValue(vertical.getMaximum());
+		
+		Logger.onLog(new LogListener() {
+			@Override
+			public void onLog(ArrayList<String> lines) {
+				ServerFrame.this.setLogAreaText(lines);
+				
+				JScrollBar vertical = scrollPane3.getVerticalScrollBar();
+				vertical.setValue(vertical.getMaximum());
+			}
+		});
+	}
+	
+	private void setLogAreaText(ArrayList<String> lines) {
+		String output = "";
+		
+		for (String line : lines) {
+			output += line + "\n";
+		}
+		
+		this.logArea.setText(output);
 	}
 	
 	private void updateStationLabel() {

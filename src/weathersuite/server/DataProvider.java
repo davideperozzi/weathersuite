@@ -165,7 +165,7 @@ public class DataProvider
 			Integer.parseInt(zipCode);
 		}
 		catch(NumberFormatException e) {
-			error = true;
+			error = !zipCode.endsWith("*");
 		}
 		
 		if ( ! zipCode.isEmpty() && ! type.isEmpty() && ! value.isEmpty() && ! error) {
@@ -173,6 +173,7 @@ public class DataProvider
 		}
 		else {
 			System.err.println("Data not complete or invalid!");
+			Logger.log("Invalid data received: " + data);
 		}
 		
 		return model;

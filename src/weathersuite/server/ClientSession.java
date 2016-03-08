@@ -74,6 +74,10 @@ public class ClientSession extends AbstractSession
 	synchronized public boolean matchModel(DataModel model) {
 		String zipCode = model.getZipCode();
 		
+		if (this.zipCode == null || this.type < 0) {
+			return false;
+		}
+		
 		if (zipCode.length() == 2 && zipCode.endsWith("*")) {
 			return zipCode.substring(0, 1).equals(this.zipCode.substring(0, 1));
 		}

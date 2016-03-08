@@ -61,7 +61,7 @@ public class Server
 			public void windowOpened(WindowEvent e) {}
 		});
 		
-		this.frame.setSize(600, 600);
+		this.frame.setSize(800, 600);
 		this.frame.setVisible(true);
 		
 		// Create data provider to save the data in
@@ -167,6 +167,7 @@ public class Server
 					Server.this.dataProvider.save();
 				} 
 				catch (IOException e) {
+					Logger.log("Error while saving station data");
 					System.err.println("Error while saving data: ");
 					e.printStackTrace();
 				}
@@ -196,7 +197,7 @@ public class Server
 		this.stations.add(session);
 		this.updateClientStatistics();
 		
-		Logger.log("Station " + session.getSocket().getInetAddress() + " connected");
+		Logger.log("Station " + session.getUid() + " with " + session.getSocket().getInetAddress() + " connected");
 	}
 	
 	synchronized private void disconnect(StationSession session) {
@@ -222,7 +223,7 @@ public class Server
 		
 		this.updateClientStatistics();
 		
-		Logger.log("Station " + session.getSocket().getInetAddress() + " disconnected");
+		Logger.log("Station " + session.getUid() + " with " + session.getSocket().getInetAddress() + " disconnected");
 	}
 	
 	synchronized private void connect(final ClientSession session) {
@@ -252,7 +253,7 @@ public class Server
 		this.clients.add(session);
 		this.updateClientStatistics();
 		
-		Logger.log("Client " + session.getSocket().getInetAddress() + " connected");
+		Logger.log("Client " + session.getUid() + " with " + session.getSocket().getInetAddress() + " connected");
 	}
 	
 	synchronized private void disconnect(ClientSession session) {
@@ -278,7 +279,7 @@ public class Server
 		
 		this.updateClientStatistics();
 		
-		Logger.log("Client " + session.getSocket().getInetAddress() + " disconnected");
+		Logger.log("Client " + session.getUid() + " with " + session.getSocket().getInetAddress() + " disconnected");
 	}
 	
 	synchronized private void updateClientStatistics() {

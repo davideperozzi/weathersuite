@@ -5,6 +5,8 @@ import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import javax.swing.*;
@@ -30,6 +32,9 @@ public class ClientFrame extends JFrame
 	private HashMap<String, String> units = new HashMap<String, String>();
 	private HashMap<String, Integer> regions = new HashMap<String, Integer>();
 	private boolean regionsFeatureEnabled = false;
+	private String lastType = "";
+	private String lastLocation = "";
+	private int lastWeathermap = -1;
 
 	public ClientFrame(String title) {
 		super(title);
@@ -53,18 +58,15 @@ public class ClientFrame extends JFrame
 		
 		// Station counter label
 		this.stationCounterLabel = new JLabel();
-		this.stationCounterLabel.setFont(new Font("Arial", Font.PLAIN, 18));
 		this.setStationCounter(this.stationCounter);
 		panel.add(this.stationCounterLabel);
 		
 		// Seperator label
 		JLabel sepLabel = new JLabel("|");
-		sepLabel.setFont(new Font("Arial", Font.PLAIN, 18));
 		panel.add(sepLabel);
 		
 		// Client counter label
 		this.clientCounterLabel = new JLabel("Clients: 0");
-		this.clientCounterLabel.setFont(new Font("Arial", Font.PLAIN, 18));
 		this.setClientCounter(this.clientCounter);
 		panel.add(this.clientCounterLabel);
 		
@@ -111,7 +113,6 @@ public class ClientFrame extends JFrame
 		// Type selection
 		String[] types = {"Temperatur", "Status", "Wind"};
 		this.typeSelection = new JComboBox<String>();
-		this.typeSelection.setFont(new Font("Arial", Font.PLAIN, 18));
 		this.typeSelection.setModel(new DefaultComboBoxModel<String>(types));
 		panel2.add(this.typeSelection, "cell 0 0,grow");
 		
@@ -124,13 +125,10 @@ public class ClientFrame extends JFrame
 		this.outputField.setLineWrap(true);
 		this.outputField.setWrapStyleWord(true);
 		this.outputField.setEditable(false);
-		this.outputField.setFont(new Font("Arial", Font.BOLD, 16));
 		scrollPane.setViewportView(this.outputField);
 		
 		// Submit button		
 		JButton btnUpdate = new JButton("Update anfordern");
-		btnUpdate.setBackground(SystemColor.menu);
-		btnUpdate.setFont(new Font("Arial", Font.BOLD, 20));
 		btnUpdate.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -187,11 +185,11 @@ public class ClientFrame extends JFrame
 			String location = this.locationField.getText();
 			
 			this.formListener.onUpdate(
-				this.typeSelection.getSelectedItem().toString(), 
-				this.regionsFeatureEnabled && this.regions.containsKey(location)
+				this.lastType = this.typeSelection.getSelectedItem().toString(), 
+				this.lastLocation = this.regionsFeatureEnabled && this.regions.containsKey(location)
 					? this.regions.get(location).toString() 
 					: this.locationField.getText(),
-				this.weathermapCheckbox.getState() ? 1 : 0
+				this.lastWeathermap = this.weathermapCheckbox.getState() ? 1 : 0
 			);
 		}
 	}
@@ -211,8 +209,12 @@ public class ClientFrame extends JFrame
 	}
 	
 	public String getTypeKey() {
-		String selected = this.typeSelection.getSelectedItem().toString();
+		String selected = this.lastType;
 		String key = "";
+		
+		if (selected.isEmpty()) {
+			selected = this.typeSelection.getSelectedItem().toString();
+		}
 		
 		for (String k : this.types.keySet()) {
 			if (this.types.get(k).equals(selected)) {
@@ -224,8 +226,8 @@ public class ClientFrame extends JFrame
 		return key;
 	}
 	
-	public String getLocationFieldText() {	
-		return this.locationField.getText();
+	public String getLocationFieldText() {
+		return !this.lastLocation.isEmpty() ? this.lastLocation : this.locationField.getText();
 	}
 	
 	public void setOutputText(String text) {
@@ -247,6 +249,10 @@ public class ClientFrame extends JFrame
 	}
 	
 	public boolean isMap() {
+		if (this.lastWeathermap >= 0) {
+			return this.lastWeathermap == 1 ? true : false;
+		}
+		
 		return this.weathermapCheckbox.getState();
 	}
 	
@@ -254,8 +260,12 @@ public class ClientFrame extends JFrame
 		this.regionsFeatureEnabled = true;
 		
 		try {
-			@SuppressWarnings("resource")
-			BufferedReader in = new BufferedReader(new FileReader(REGION_FILE));
+			InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(REGION_FILE);
+			BufferedReader in = new BufferedReader(
+				inputStream != null
+					? new InputStreamReader(inputStream) 
+					: new FileReader(REGION_FILE)
+			);
 			String line;
 			
 			while ((line = in.readLine()) != null && line.length() > 0) {
