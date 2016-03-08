@@ -26,7 +26,7 @@ public class Client
 		this.host = host;
 		this.port = port;
 		
-		this.frame = new ClientFrame("Weather Client");
+		this.frame = new ClientFrame("Weathersuite: Client");
 		this.frame.setBounds(100, 100, 800, 680);
 		this.frame.setVisible(true);
 		this.frame.readRegions();

@@ -1,3 +1,4 @@
 weather-data
 
 bin
+*.log

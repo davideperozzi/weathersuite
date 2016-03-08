@@ -9,6 +9,7 @@ import java.util.*;
 import weathersuite.models.DataModel;
 import weathersuite.server.ClientSession;
 import weathersuite.server.DataProvider;
+import weathersuite.server.Logger;
 import weathersuite.server.ServerFrame;
 import weathersuite.server.SessionInteraction;
 import weathersuite.server.StationSession;
@@ -24,13 +25,13 @@ public class Server
 	private DataProvider dataProvider;
 	private ServerFrame frame;
 	
-	public Server(int stationPort, int clientPort) {
+	public Server(int stationPort, int clientPort) {		
 		// Set configs
 		this.stationPort = stationPort;
 		this.clientPort = clientPort;
 		
 		// Setup Frame
-		this.frame = new ServerFrame("Weather Server");		
+		this.frame = new ServerFrame("Weathersuite: Server");		
 		this.frame.addWindowListener(new WindowListener(){
 			@Override
 			public void windowClosing(WindowEvent e) {		
@@ -41,6 +42,8 @@ public class Server
 				catch (IOException e1) {
 					e1.printStackTrace();
 				}
+				
+				Logger.log("Server shutted down");
 				
 				System.exit(1);
 			}
@@ -74,16 +77,22 @@ public class Server
 					+ "Maybe some ports are blocked?: ");
 			e.printStackTrace();
 			
+			Logger.log("Server shutted down: " + e.getClass());
+			
 			// Exit with error code
 			System.exit(1);
 		}
 		catch (IOException e) {
 			e.printStackTrace();
 			
+			Logger.log("Server shutted down: " + e.getClass());
+			
 			// Stop the application. 
 			// Without sockets -> no interaction
 			System.exit(1);
 		}
+		
+		Logger.log("Server started");
 	}
 	
 	public void run() {		
@@ -186,6 +195,8 @@ public class Server
 			
 		this.stations.add(session);
 		this.updateClientStatistics();
+		
+		Logger.log("Station " + session.getSocket().getInetAddress() + " connected");
 	}
 	
 	synchronized private void disconnect(StationSession session) {
@@ -210,6 +221,8 @@ public class Server
 		}
 		
 		this.updateClientStatistics();
+		
+		Logger.log("Station " + session.getSocket().getInetAddress() + " disconnected");
 	}
 	
 	synchronized private void connect(final ClientSession session) {
@@ -238,6 +251,8 @@ public class Server
 				
 		this.clients.add(session);
 		this.updateClientStatistics();
+		
+		Logger.log("Client " + session.getSocket().getInetAddress() + " connected");
 	}
 	
 	synchronized private void disconnect(ClientSession session) {
@@ -262,6 +277,8 @@ public class Server
 		}
 		
 		this.updateClientStatistics();
+		
+		Logger.log("Client " + session.getSocket().getInetAddress() + " disconnected");
 	}
 	
 	synchronized private void updateClientStatistics() {
