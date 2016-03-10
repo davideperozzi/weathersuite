@@ -3,6 +3,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 
 import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.table.*;
 
 import net.miginfocom.swing.MigLayout;
@@ -23,6 +24,14 @@ public class ServerFrame extends JFrame
 	
 	public ServerFrame(String title) {
 		super(title);
+		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} 
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e1) {
+			e1.printStackTrace();
+		}
 		
 		this.getContentPane().setLayout(
 			new MigLayout("", "[][grow][grow]", "[][][][grow][grow]")

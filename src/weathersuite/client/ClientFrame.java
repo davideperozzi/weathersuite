@@ -39,6 +39,14 @@ public class ClientFrame extends JFrame
 	public ClientFrame(String title) {
 		super(title);
 		
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} 
+		catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e1) {
+			e1.printStackTrace();
+		}
+		
 		// Add border layout
 		this.getContentPane().setLayout(new BorderLayout(0, 0));
 		

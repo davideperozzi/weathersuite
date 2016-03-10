@@ -61,7 +61,7 @@ public class Server
 			public void windowOpened(WindowEvent e) {}
 		});
 		
-		this.frame.setSize(800, 600);
+		this.frame.setSize(860, 600);
 		this.frame.setVisible(true);
 		
 		// Create data provider to save the data in
