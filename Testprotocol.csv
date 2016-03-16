@@ -1,0 +1,18 @@
+Testfall;Erwartetes Ereignis;Ergebnis eingetroffen
+Client Verbindungsversuch zum Server;Erneuter Verbingungsversuch nach 10 Sekunden;ja
+Client -> Server Verbindungsabbruch;Server l”scht Client Session (Keine Exception);ja
+Server -> Client Verbindungsabbruch;Keine Exception. Erneuter Verbindungsversuch nach 10 Sekunden (nach Update);ja
+Client -> Server Verbindungsabbruch w„hrend Daten gesendet werden;Keine Exception. Server l”scht Session;ja
+Server Verbindungsabbruch w„hrend die Station Daten sendet;Keine Exception. Server wird geschlossen. (Fehlerbehebung: Exception vor dem Schlieáen abgefangen);nein (behoben)
+20 Clients verbinden sich vom selben PC;Server verarbeitet die Client-Sockets, erstellt Sessions, zeigt die Clients im Frontend an und updated alle Statistiken;ja
+5 Clients verbinden sich von verschiedenen PC's;Server verarbeitet die Client-Sockets, erstellt Sessions, zeigt die Clients im Frontend an und updated alle Statistiken;ja
+40 Wetterstationen verbinden sich vom selben PC und senden jede Sekunde Zufallsdaten;Server verarbeitet die Station-Sockets, erstellt Sessions, zeigt diese im Frontend an und updated alle Statistiken;ja
+Client update (Wetterkarte);Daten werden von Server angefragt, empfangen und aufgelistet;ja
+Client update (Gltige Region);Daten werden von Server angefragt, empfangen und aufgelistet;ja
+Client update (Gltige Hauptregion);Daten werden von Server angefragt, empfangen und aufgelistet;ja
+Client update (Ungltige Region);Fehlermeldung per PopUp;ja
+Client update (Textuelle Regionseingabe);Daten werden von Server angefragt, empfangen und aufgelistet;ja
+Client update (Falsche textuelle Regionseingabe);Fehlermeldung per PopUp;ja
+Fehlerhafte Wetterdaten von Wetterstation an Server;Error in Konsole und Daten werden verworfen;ja
+Zwischenspeicherung von WetterDaten nach Server neustart;Daten sind persistent vorhanden;ja
+Station sendet Daten an Server;Sendet ein update an alle betroffenen Clients;ja
